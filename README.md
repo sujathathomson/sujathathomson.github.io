@@ -1,23 +1,22 @@
-# Sujatha Thomson Portfolio App
+# Sujatha Thomson — Portfolio
 
-This is a free static portfolio website designed for GitHub Pages.
+A free static portfolio website designed for GitHub Pages.
 
 ## Files
-- `index.html` — main portfolio page
-- `styles.css` — visual styling
-- `script.js` — small mobile navigation script
+- `index.html` — the portfolio page (hero, stats, about, achievements, expertise, experience, credentials, contact)
+- `styles.css` — visual styling and responsive layout
+- `script.js` — mobile navigation + auto-updating footer year
+- `profile-photo.jpg` — profile photo
+- `Sujatha-Thomson-Resume.pdf` — downloadable résumé (linked from the site)
 
-## Before publishing
-1. Replace placeholder email, LinkedIn, and resume links.
-2. Add approved screenshots only if they do not contain confidential or internal information.
-3. Review project descriptions to ensure they can be shared publicly.
-4. Add a PDF resume if desired and update the Resume button link.
+## Things you may want to update
+- **Email**: currently `sujathom@gmail.com` (edit the `mailto:` links in `index.html`).
+- **LinkedIn**: not linked yet. To add it, drop another `<a class="button secondary" href="...">LinkedIn</a>` into the `#contact` section.
+- Review all text to make sure nothing confidential or internal is shared publicly.
 
-## Free deployment with GitHub Pages
-1. Create a free GitHub account.
-2. Create a repository named `yourusername.github.io`.
-3. Upload `index.html`, `styles.css`, and `script.js` to the repository root.
-4. Go to Settings > Pages.
-5. Under Build and deployment, choose Deploy from a branch.
-6. Select the `main` branch and `/root`, then save.
-7. Your site will be available at `https://yourusername.github.io`.
+## Deploying with GitHub Pages
+1. Push these files to the root of the `sujathathomson.github.io` repository.
+2. Go to **Settings → Pages**.
+3. Under **Build and deployment**, choose **Deploy from a branch**.
+4. Select the `main` branch and `/root`, then save.
+5. The site will be live at `https://sujathathomson.github.io`.
