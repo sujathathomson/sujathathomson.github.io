@@ -38,13 +38,21 @@ function formatNum(n, useComma) {
   const v = Math.round(n);
   return useComma ? v.toLocaleString('en-US') : String(v);
 }
+// Tolerates targets written as display strings ("6,000+"); NaN would render literally.
+function statTarget(el) {
+  const n = parseFloat(String(el.dataset.target).replace(/[^0-9.-]/g, ''));
+  return Number.isFinite(n) ? n : null;
+}
 function setStatFinal(el) {
-  el.textContent = formatNum(+el.dataset.target, el.dataset.format === 'comma') + (el.dataset.suffix || '');
+  const target = statTarget(el);
+  if (target === null) return;
+  el.textContent = formatNum(target, el.dataset.format === 'comma') + (el.dataset.suffix || '');
 }
 function animateStat(el) {
   if (el.dataset.counted) return;
+  const target = statTarget(el);
+  if (target === null) return;
   el.dataset.counted = '1';
-  const target = +el.dataset.target;
   const suffix = el.dataset.suffix || '';
   const comma = el.dataset.format === 'comma';
   const duration = 1500;
