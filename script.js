@@ -15,6 +15,37 @@ if (loader) {
   if (document.readyState === 'complete') hideLoader();
 }
 
+/* ---------- Theme toggle (initial theme is set inline in <head>) ---------- */
+const themeToggle = document.querySelector('.theme-toggle');
+const themeMeta = document.querySelector('meta[name="theme-color"]');
+const themeQuery = window.matchMedia('(prefers-color-scheme: dark)');
+
+function applyTheme(theme) {
+  const dark = theme === 'dark';
+  document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+  if (themeMeta) themeMeta.content = dark ? '#0b1220' : '#0b5cad';
+  if (themeToggle) {
+    themeToggle.setAttribute('aria-pressed', String(dark));
+    themeToggle.setAttribute('aria-label', dark ? 'Switch to light theme' : 'Switch to dark theme');
+  }
+  document.dispatchEvent(new CustomEvent('themechange'));
+}
+
+applyTheme(document.documentElement.dataset.theme || 'light');
+
+themeToggle?.addEventListener('click', () => {
+  const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+  applyTheme(next);
+  try { localStorage.setItem('theme', next); } catch (e) { /* private mode */ }
+});
+
+// Follow the OS until the visitor picks a theme of their own
+themeQuery.addEventListener('change', (e) => {
+  let saved = null;
+  try { saved = localStorage.getItem('theme'); } catch (err) { /* private mode */ }
+  if (!saved) applyTheme(e.matches ? 'dark' : 'light');
+});
+
 const toggle = document.querySelector('.nav-toggle');
 const links = document.querySelector('.nav-links');
 
@@ -135,6 +166,20 @@ if (heroCanvas && !prefersReduced) {
 
   const nodeCount = () => (window.innerWidth < 700 ? 12 : 24);
 
+  // Colours live in CSS custom properties so they follow the active theme
+  let palette = readPalette();
+  function readPalette() {
+    const css = getComputedStyle(document.documentElement);
+    const v = (name, fallback) => (css.getPropertyValue(name).trim() || fallback);
+    return {
+      line: v('--graph-line', '11, 92, 173'),
+      lineAlpha: parseFloat(v('--graph-line-alpha', '0.18')),
+      node: v('--graph-node', '13, 148, 136'),
+      nodeAlpha: parseFloat(v('--graph-node-alpha', '0.55')),
+    };
+  }
+  document.addEventListener('themechange', () => { palette = readPalette(); });
+
   function resize() {
     const rect = hero.getBoundingClientRect();
     width = rect.width;
@@ -165,7 +210,7 @@ if (heroCanvas && !prefersReduced) {
         const dy = nodes[i].y - nodes[j].y;
         const dist = Math.hypot(dx, dy);
         if (dist < maxDist) {
-          ctx.strokeStyle = `rgba(11, 92, 173, ${(1 - dist / maxDist) * 0.18})`;
+          ctx.strokeStyle = `rgba(${palette.line}, ${(1 - dist / maxDist) * palette.lineAlpha})`;
           ctx.lineWidth = 1;
           ctx.beginPath();
           ctx.moveTo(nodes[i].x, nodes[i].y);
@@ -174,7 +219,7 @@ if (heroCanvas && !prefersReduced) {
         }
       }
     }
-    ctx.fillStyle = 'rgba(13, 148, 136, 0.55)';
+    ctx.fillStyle = `rgba(${palette.node}, ${palette.nodeAlpha})`;
     for (const n of nodes) {
       ctx.beginPath();
       ctx.arc(n.x, n.y, 2.5, 0, Math.PI * 2);
